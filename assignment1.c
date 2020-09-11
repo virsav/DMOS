@@ -4,7 +4,7 @@
 
 pthread_mutex_t lock;
 
-int arr[3]={0};
+
 pthread_t init_thread(void *func, int *arg){
 	pthread_t tid;
 	int ret;
@@ -16,7 +16,7 @@ pthread_t init_thread(void *func, int *arg){
 	return tid;
 }
 
-void child0(){
+void child0(int arr[]){
 	while(1){
 	pthread_mutex_lock(&lock);
 	arr[0]++;
@@ -26,7 +26,7 @@ void child0(){
 	}
 }
 
-void child1(){
+void child1(int arr[]){
 	while(1){
 	pthread_mutex_lock(&lock);
 	arr[1]++;
@@ -36,7 +36,7 @@ void child1(){
 	}
 }
 
-void child2(){
+void child2(int arr[]){
 	while(1){
 	pthread_mutex_lock(&lock);
 	arr[2]++;
@@ -50,14 +50,15 @@ void child2(){
 int main(){
 
 	int i;
+	int arr[3]={0};
 	printf("Parent thread with PID: %d initialized\n",getpid());
 
 	
-	pthread_t tid_0 = init_thread(child0,NULL);
+	pthread_t tid_0 = init_thread(child0,arr);
 	printf("Child 0 with TID: %d initialized\n",tid_0);
-	pthread_t tid_1 = init_thread(child1,NULL);
+	pthread_t tid_1 = init_thread(child1,arr);
 	printf("Child 1 with TID: %d initialized\n",tid_1);
-	pthread_t tid_2 = init_thread(child2,NULL);
+	pthread_t tid_2 = init_thread(child2,arr);
 	printf("Child 2 with TID: %d initialized\n",tid_2);
 
 	while(1){
