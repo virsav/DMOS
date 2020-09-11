@@ -3,7 +3,7 @@
 #include <pthread.h>
 
 pthread_mutex_t lock;
-
+volatile int i=0;
 
 pthread_t init_thread(void *func, int *arg){
 	pthread_t tid;
@@ -18,30 +18,47 @@ pthread_t init_thread(void *func, int *arg){
 
 void child0(int arr[]){
 	while(1){
-	pthread_mutex_lock(&lock);
+	//pthread_mutex_lock(&lock);
+	if(i == 0)
+	{
+	//pthread_mutex_lock(&lock);
+	i++;
 	arr[0]++;
 	printf("Child 0 added 1 to array[0], value of array[0]:%d\n",arr[0]);
-	pthread_mutex_unlock(&lock);
+	//pthread_mutex_unlock(&lock);
+	//sleep(1);
+	}
+	//pthread_mutex_unlock(&lock);
 	sleep(1);
 	}
 }
 
 void child1(int arr[]){
 	while(1){
-	pthread_mutex_lock(&lock);
+	//pthread_mutex_lock(&lock);
+	if(i == 1){
+	i++;
 	arr[1]++;
 	printf("Child 1 added 1 to array[1], value of array[1]:%d\n",arr[1]);
-	pthread_mutex_unlock(&lock);
+	//pthread_mutex_unlock(&lock);
+	//sleep(1);
+	}
+	//pthread_mutex_unlock(&lock);
 	sleep(1);
 	}
 }
 
 void child2(int arr[]){
 	while(1){
-	pthread_mutex_lock(&lock);
+	//pthread_mutex_lock(&lock);
+	if(i == 2){
+	i++;
 	arr[2]++;
 	printf("Child 2 added 1 to array[2], value of array[2]:%d\n",arr[2]);
-	pthread_mutex_unlock(&lock);
+	//pthread_mutex_unlock(&lock);
+	//sleep(1);
+	}
+	//pthread_mutex_unlock(&lock);
 	sleep(1);
 	}
 }
@@ -49,7 +66,6 @@ void child2(int arr[]){
 
 int main(){
 
-	int i;
 	int arr[3]={0};
 	printf("Parent thread with PID: %d initialized\n",getpid());
 
@@ -62,7 +78,12 @@ int main(){
 	printf("Child 2 with TID: %d initialized\n",tid_2);
 
 	while(1){
-	sleep(1);
+	sleep(3);
+	//pthread_mutex_lock(&lock);
+	if(i==3){
+	i=0;
 	printf("Values in the Array: %d, %d, %d\n", arr[0], arr[1], arr[2]);
+	}
+	//pthread_mutex_lock(&lock);
 	}
 }
