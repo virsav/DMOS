@@ -5,6 +5,52 @@
 pthread_mutex_t lock;
 volatile int i=0;
 
+typedef struct semaphore_t {
+     pthread_mutex_t mutex;
+     pthread_cond_t cond;
+     int count;
+} semaphore_t;
+
+void init_sem(semaphore_t *s, int i)
+{   
+    s->count = i;
+    pthread_mutex_init(&(s->mutex), NULL);
+    pthread_cond_init(&(s->cond), NULL);
+}
+
+
+/*
+ * The P routine decrements the semaphore, and if the value is less than
+ * zero then blocks the process 
+ */
+void P(semaphore_t *sem)
+{   
+    pthread_mutex_lock (&(sem->mutex)); 
+    sem->count--;
+    if (sem->count < 0) pthread_cond_wait(&(sem->cond), &(sem->mutex));
+    pthread_mutex_unlock (&(sem->mutex)); 
+}
+
+
+/*
+ * The V routine increments the semaphore, and if the value is 0 or
+ * negative, wakes up a process and yields
+ */
+
+void V(semaphore_t * sem)
+{   
+    pthread_mutex_lock (&(sem->mutex)); 
+    sem->count++;
+    if (sem->count <= 0) {
+	pthread_cond_signal(&(sem->cond));
+    }
+    pthread_mutex_unlock (&(sem->mutex)); 
+    pthread_yield();
+}
+
+
+semaphore_t mutex;
+
 pthread_t init_thread(void *func, int *arg){
 	pthread_t tid;
 	int ret;
@@ -18,48 +64,34 @@ pthread_t init_thread(void *func, int *arg){
 
 void child0(int arr[]){
 	while(1){
-	//pthread_mutex_lock(&lock);
-	if(i == 0)
-	{
-	//pthread_mutex_lock(&lock);
-	i++;
-	arr[0]++;
-	printf("Child 0 added 1 to array[0], value of array[0]:%d\n",arr[0]);
-	//pthread_mutex_unlock(&lock);
-	//sleep(1);
-	}
-	//pthread_mutex_unlock(&lock);
-	sleep(1);
+		
+		P(&mutex);
+		arr[0]++;
+		printf("Child 0 added 1 to array[0], value of array[0]:%d\n",arr[0]);
+		
+		sleep(1);
 	}
 }
 
 void child1(int arr[]){
 	while(1){
-	//pthread_mutex_lock(&lock);
-	if(i == 1){
-	i++;
-	arr[1]++;
-	printf("Child 1 added 1 to array[1], value of array[1]:%d\n",arr[1]);
-	//pthread_mutex_unlock(&lock);
-	//sleep(1);
-	}
-	//pthread_mutex_unlock(&lock);
-	sleep(1);
+		
+		P(&mutex);
+		arr[1]++;
+		printf("Child 1 added 1 to array[1], value of array[1]:%d\n",arr[1]);
+		
+		sleep(1);
 	}
 }
 
 void child2(int arr[]){
 	while(1){
-	//pthread_mutex_lock(&lock);
-	if(i == 2){
-	i++;
-	arr[2]++;
-	printf("Child 2 added 1 to array[2], value of array[2]:%d\n",arr[2]);
-	//pthread_mutex_unlock(&lock);
-	//sleep(1);
-	}
-	//pthread_mutex_unlock(&lock);
-	sleep(1);
+		
+		P(&mutex);
+		arr[2]++;
+		printf("Child 2 added 1 to array[2], value of array[2]:%d\n",arr[2]);
+		
+		sleep(1);
 	}
 }
 
@@ -67,6 +99,7 @@ void child2(int arr[]){
 int main(){
 
 	int arr[3]={0};
+	init_sem(&mutex, 3);
 	printf("Parent thread with PID: %d initialized\n",getpid());
 
 	
@@ -78,12 +111,11 @@ int main(){
 	printf("Child 2 with TID: %d initialized\n",tid_2);
 
 	while(1){
-	sleep(3);
-	//pthread_mutex_lock(&lock);
-	if(i==3){
-	i=0;
-	printf("Values in the Array: %d, %d, %d\n", arr[0], arr[1], arr[2]);
-	}
-	//pthread_mutex_lock(&lock);
+		sleep(3);
+		printf("Values in the Array: %d, %d, %d\n", arr[0], arr[1], arr[2]);
+		V(&mutex);
+		V(&mutex);
+		V(&mutex);
+		
 	}
 }
