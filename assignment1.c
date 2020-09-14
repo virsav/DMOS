@@ -67,7 +67,7 @@ pthread_t init_thread(void *func, struct args_struct *arg){
 	return tid;
 }
 
-void child0(struct args_struct *args){
+void child(struct args_struct *args){
 	while(1){
 		
 		P(&mutex);
@@ -97,11 +97,11 @@ int main(){
 	args3.arr = arr;
 	args3.num = 2;
 	
-	pthread_t tid_0 = init_thread(child0,&args1);
+	pthread_t tid_0 = init_thread(child,&args1);
 	printf("Child 0 with TID: %d initialized\n",tid_0);
-	pthread_t tid_1 = init_thread(child0,&args2);
+	pthread_t tid_1 = init_thread(child,&args2);
 	printf("Child 1 with TID: %d initialized\n",tid_1);
-	pthread_t tid_2 = init_thread(child0,&args3);
+	pthread_t tid_2 = init_thread(child,&args3);
 	printf("Child 2 with TID: %d initialized\n",tid_2);
 
 	while(1){
