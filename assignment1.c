@@ -48,13 +48,18 @@ void V(semaphore_t * sem)
     pthread_yield();
 }
 
+struct args_struct{
+
+	int *arr;
+	int num;
+};
 
 semaphore_t mutex,child_finish;
 
-pthread_t init_thread(void *func, int *arg){
+pthread_t init_thread(void *func, struct args_struct *arg){
 	pthread_t tid;
 	int ret;
-	ret = pthread_create(&tid,NULL,func,arg);
+	ret = pthread_create(&tid,NULL,func,(void*)arg);
 	if(ret){
 		printf("error\n");
 		exit(-1);
@@ -62,42 +67,16 @@ pthread_t init_thread(void *func, int *arg){
 	return tid;
 }
 
-void child0(int arr[]){
+void child0(struct args_struct *args){
 	while(1){
 		
 		P(&mutex);
-		arr[0]++;
-		printf("Child 0 added 1 to array[0], value of array[0]:%d\n",arr[0]);
-		//i++;
+		args->arr[args->num]++;
+		printf("Child %d added 1 to array[%d], value of array[%d]:%d\n",args->num, args->num, args->num,args->arr[args->num]);
 		sleep(1);
 		V(&child_finish);
 	}
 }
-
-void child1(int arr[]){
-	while(1){
-		
-		P(&mutex);
-		arr[1]++;
-		printf("Child 1 added 1 to array[1], value of array[1]:%d\n",arr[1]);
-		//i++;
-		sleep(1);
-		V(&child_finish);
-	}
-}
-
-void child2(int arr[]){
-	while(1){
-		
-		P(&mutex);
-		arr[2]++;
-		printf("Child 2 added 1 to array[2], value of array[2]:%d\n",arr[2]);
-		//i++;
-		sleep(1);
-		V(&child_finish);
-	}
-}
-
 
 int main(){
 
@@ -106,12 +85,23 @@ int main(){
 	init_sem(&child_finish, 0);
 	printf("Parent thread with PID: %d initialized\n",getpid());
 
+	struct args_struct args1;
+	args1.arr = arr;
+	args1.num = 0;
+
+	struct args_struct args2;
+	args2.arr = arr;
+	args2.num = 1;
+
+	struct args_struct args3;
+	args3.arr = arr;
+	args3.num = 2;
 	
-	pthread_t tid_0 = init_thread(child0,arr);
+	pthread_t tid_0 = init_thread(child0,&args1);
 	printf("Child 0 with TID: %d initialized\n",tid_0);
-	pthread_t tid_1 = init_thread(child1,arr);
+	pthread_t tid_1 = init_thread(child0,&args2);
 	printf("Child 1 with TID: %d initialized\n",tid_1);
-	pthread_t tid_2 = init_thread(child2,arr);
+	pthread_t tid_2 = init_thread(child0,&args3);
 	printf("Child 2 with TID: %d initialized\n",tid_2);
 
 	while(1){
