@@ -49,7 +49,7 @@ void V(semaphore_t * sem)
 }
 
 
-semaphore_t mutex,child_finish;
+semaphore_t mutex,child_finish, wait1, wait2, wait3;
 
 pthread_t init_thread(void *func, int *arg){
 	pthread_t tid;
@@ -64,36 +64,27 @@ pthread_t init_thread(void *func, int *arg){
 
 void child0(int arr[]){
 	while(1){
-		
-		P(&mutex);
+		P(&wait1);
 		arr[0]++;
 		printf("Child 0 added 1 to array[0], value of array[0]:%d\n",arr[0]);
-		//i++;
-		sleep(1);
 		V(&child_finish);
 	}
 }
 
 void child1(int arr[]){
 	while(1){
-		
-		P(&mutex);
+		P(&wait2);
 		arr[1]++;
 		printf("Child 1 added 1 to array[1], value of array[1]:%d\n",arr[1]);
-		//i++;
-		sleep(1);
 		V(&child_finish);
 	}
 }
 
 void child2(int arr[]){
 	while(1){
-		
-		P(&mutex);
+		P(&wait3);
 		arr[2]++;
 		printf("Child 2 added 1 to array[2], value of array[2]:%d\n",arr[2]);
-		//i++;
-		sleep(1);
 		V(&child_finish);
 	}
 }
@@ -102,8 +93,11 @@ void child2(int arr[]){
 int main(){
 
 	int arr[3]={0};
-	init_sem(&mutex, 3);
+
 	init_sem(&child_finish, 0);
+	init_sem(&wait1, 1);
+	init_sem(&wait2, 1);
+	init_sem(&wait3, 1);
 	printf("Parent thread with PID: %d initialized\n",getpid());
 
 	
@@ -115,17 +109,14 @@ int main(){
 	printf("Child 2 with TID: %d initialized\n",tid_2);
 
 	while(1){
-		//sleep(3);
-		//if(i==3){
-			//i=0;
+		
 			P(&child_finish);
 			P(&child_finish);
 			P(&child_finish);
 			printf("Values in the Array: %d, %d, %d\n", arr[0], arr[1], arr[2]);
-			V(&mutex);
-			V(&mutex);
-			V(&mutex);
-		//}
+			V(&wait1);
+			V(&wait2);
+			V(&wait3);
 		
 	}
 }
