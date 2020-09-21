@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include <pthread.h>
 
-pthread_mutex_t lock;
-volatile int i=0;
 
 typedef struct semaphore_t {
      pthread_mutex_t mutex;
@@ -52,9 +50,10 @@ struct args_struct{
 
 	int *arr;
 	int num;
+	semaphore_t wait;
 };
 
-semaphore_t mutex,child_finish;
+semaphore_t child_finish;
 
 pthread_t init_thread(void *func, struct args_struct *arg){
 	pthread_t tid;
@@ -68,12 +67,14 @@ pthread_t init_thread(void *func, struct args_struct *arg){
 }
 
 void child(struct args_struct *args){
+
+
 	while(1){
-		
-		P(&mutex);
+	
+		P(&args->wait);
 		args->arr[args->num]++;
 		printf("Child %d added 1 to array[%d], value of array[%d]:%d\n",args->num, args->num, args->num,args->arr[args->num]);
-		sleep(1);
+		//sleep(1);
 		V(&child_finish);
 	}
 }
@@ -81,21 +82,23 @@ void child(struct args_struct *args){
 int main(){
 
 	int arr[3]={0};
-	init_sem(&mutex, 3);
 	init_sem(&child_finish, 0);
 	printf("Parent thread with PID: %d initialized\n",getpid());
 
 	struct args_struct args1;
 	args1.arr = arr;
 	args1.num = 0;
+	init_sem(&args1.wait, 1);
 
 	struct args_struct args2;
 	args2.arr = arr;
 	args2.num = 1;
+	init_sem(&args2.wait, 1);
 
 	struct args_struct args3;
 	args3.arr = arr;
 	args3.num = 2;
+	init_sem(&args3.wait, 1);
 	
 	pthread_t tid_0 = init_thread(child,&args1);
 	printf("Child 0 with TID: %d initialized\n",tid_0);
@@ -112,9 +115,9 @@ int main(){
 			P(&child_finish);
 			P(&child_finish);
 			printf("Values in the Array: %d, %d, %d\n", arr[0], arr[1], arr[2]);
-			V(&mutex);
-			V(&mutex);
-			V(&mutex);
+			V(&args1.wait);
+			V(&args2.wait);
+			V(&args3.wait);
 		//}
 		
 	}
