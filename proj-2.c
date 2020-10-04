@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <ucontext.h>
 #include <string.h>
-#include <pthread.h>
 #include <zconf.h>
 
 #define Size_Stack 8192
@@ -30,33 +29,17 @@ struct TCB_t* NewItem(void){
 }
 
 struct TCB_t* newQueue(void){
-    //struct TCB_t *head =NULL;
-    struct TCB_t *head = (struct TCB_t*)malloc(sizeof(struct TCB_t));
-    head->thread_id = 0;
-    head->next = NULL;
-    head->prev = NULL;
-    //head->context = NULL;
-    head->next = head->prev;
-    head->prev = head->next;
+    struct TCB_t *head;
+    head = NULL;
     return head;
 }
 
-void AddQueue(struct TCB_t **head, int item){
-    struct TCB_t *add = (struct TCB_t*)malloc(sizeof(struct TCB_t));
-    add->thread_id = item;
-    struct TCB_t* temp = *head;
-    while((*head) != temp->next){
-        temp = temp->next;
-    }
-    add->next = *head;
-    add->prev = temp;
-    temp->next = add;
-    (*head)->prev = add;
-}
-void AddQueue2(struct TCB_t **head, struct TCB_t **item){
+void AddQueue(struct TCB_t **head, struct TCB_t **item){
     struct TCB_t* temp = *head;
     if(temp == NULL){
         (*head) = (*item);
+        (*head)->next = (*head)->prev;
+        (*head)->prev = (*head)->next;
         return;
     }
     if(temp->next == NULL){
@@ -77,23 +60,22 @@ void AddQueue2(struct TCB_t **head, struct TCB_t **item){
 
 struct TCB_t* DelQueue(struct TCB_t **head){
     struct TCB_t *temp = (*head);
+    struct TCB_t *end = (*head);
     struct TCB_t *next;
     if((*head) == NULL){
         return NULL;
     }
     if((*head)->next == NULL){
-        return (*head);
-    }
-    if((*head)->next->next == NULL){
-        temp = (*head)->next;
         (*head)->next = NULL;
         (*head)->prev = NULL;
         return temp;
     }
-    temp = temp->next;
-    next = temp->next;
-    (*head)->next = next;
-    next->prev = (*head);
+    while((*head) != end->next){
+        end =end->next;
+    }
+    (*head) = temp->next;
+    end->next = (*head);
+    (*head)->prev = end;
     temp->next = NULL;
     temp->prev = NULL;
     return temp;
@@ -109,12 +91,12 @@ struct TCB_t *Curr_Thread;
 volatile int global_thread_id=0;
 
 void start_thread(void (*function)(void)){
-    void *stack = (void*)malloc(Size_Stack);
-    struct TCB_t *TCB = (struct TCB_t*)malloc(sizeof(struct TCB_t));
-    init_TCB(TCB, function, stack, Size_Stack);
-    global_thread_id++;
-    TCB->thread_id = global_thread_id;
-    AddQueue2(&ReadyQ, &TCB);
+  void *stack = (void*)malloc(Size_Stack);
+  struct TCB_t *TCB = NewItem();
+  init_TCB(TCB, function, stack, Size_Stack);
+  global_thread_id++;
+  TCB->thread_id = global_thread_id;
+  AddQueue(&ReadyQ, &TCB);
 }
 
 void run(){
@@ -126,7 +108,7 @@ void run(){
 
 void yield(){
     struct TCB_t *Prev_Thread;
-    AddQueue2(&ReadyQ,&Curr_Thread);
+    AddQueue(&ReadyQ,&Curr_Thread);
     Prev_Thread = Curr_Thread;
     Curr_Thread = DelQueue(&ReadyQ);
     swapcontext(&(Prev_Thread->context), &(Curr_Thread->context));
@@ -183,4 +165,3 @@ int main() {
     run();
     return 0;
 }
-
