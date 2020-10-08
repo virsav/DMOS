@@ -1,32 +1,39 @@
 #include "q.h"
 
-TCB_t* ReadyQ;
-TCB_t* Curr_Thread;
-int counter = 0;
+TCB_t* ReadyQ;			//Pointer to queue
+TCB_t* Curr_Thread;		//Pointer to current thread
+int counter = 0;		//Thread id
 
+/* Function to start a new thread, hence allocate space and initialised the TCB structure 
+for the thread and add it the queue */
 void start_thread(void (*function)(void))
 {
     int stack_size = 8192;
     void *stack = (void *)malloc(stack_size);
     TCB_t *tcb = (TCB_t *)malloc(sizeof(TCB_t));
     init_TCB (tcb, function, stack, stack_size);
-    tcb->thread_id = counter+1;
+    tcb->thread_id = ++counter;
     AddQueue(&ReadyQ, &tcb);
+    printf("Starting Thread no %d\n", tcb->thread_id);
 }
 
+/* Function to run the head of the queue */
 void run()
 {
     Curr_Thread = DelQueue(&ReadyQ);
-    ucontext_t parent;     // get a place to store the main context, for faking
-    getcontext(&parent);   // magic sauce
-    swapcontext(&parent, &(Curr_Thread->context));  // start the first thread
+    ucontext_t parent;     
+    getcontext(&parent);   
+    swapcontext(&parent, &(Curr_Thread->context));
+
 }
 
+/* Function to swap the context and run the next item in the queue */
 void yield()
 {
     TCB_t* Prev_Thread;
     AddQueue(&ReadyQ, &Curr_Thread);
     Prev_Thread = Curr_Thread;
     Curr_Thread = DelQueue(&ReadyQ);
+    printf("Switching from Thread %d to Thread %d\n", Prev_Thread->thread_id, Curr_Thread->thread_id);
     swapcontext(&(Prev_Thread->context), &(Curr_Thread->context));
 }

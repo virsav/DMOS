@@ -1,11 +1,13 @@
 #include "TCB.h"
 
+/* Allocating space for TCB structure of new item to be added to the queue */
 TCB_t* NewItem(){
 
     TCB_t* new_item = (TCB_t*)malloc(sizeof(TCB_t));
     return new_item;
 }
 
+/* Creating a new empty queue */
 TCB_t* newQueue(){
 
     TCB_t* header;
@@ -13,6 +15,7 @@ TCB_t* newQueue(){
     return header;
 }
 
+/* Adding element to end of the queue  */
 void AddQueue(TCB_t **head, TCB_t **item)
 {
     if((*head) == NULL){
@@ -20,13 +23,13 @@ void AddQueue(TCB_t **head, TCB_t **item)
         (*head)->next = (*head);
         (*head)->prev = (*head);
     }
-    else if((*head)->next == NULL){
+/*    else if((*head)->next == NULL){
         (*item)->prev = (*head);
         (*item)->next = (*head);
         (*head)->prev = (*item);
         (*head)->next = (*item);
 
-    }
+    }*/
     else{
         (*item)->prev = (*head)->prev;
         (*item)->next = (*head);
@@ -35,6 +38,8 @@ void AddQueue(TCB_t **head, TCB_t **item)
     }
 }
 
+/* Deleting the head of the queue and adding it to the end of the queue,
+Making the next item the new head of the queue */
 TCB_t* DelQueue(TCB_t **head){
 
     if((*head)->next == (*head) && (*head)->prev == (*head)){
@@ -45,7 +50,9 @@ TCB_t* DelQueue(TCB_t **head){
         return temp;
     }
     else if(head == NULL){
-        return NULL;
+        perror("Queue is empty"); 
+        exit(EXIT_FAILURE);
+        //return NULL;
     }
     else{
         TCB_t* temp = (*head);
@@ -56,6 +63,7 @@ TCB_t* DelQueue(TCB_t **head){
     }
 }
 
+/* Freeing the allocated space of the TCB structure of the queue */
 void FreeItem(TCB_t **item){
     (*item) = NULL;
     free(&(*item));

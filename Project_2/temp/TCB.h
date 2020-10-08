@@ -5,6 +5,7 @@
 #include <string.h>
 #include <unistd.h>
 
+/* TCB structure for each item/thread in the queue */
 typedef struct TCB_item {
 
     struct TCB_item* next;
@@ -13,6 +14,7 @@ typedef struct TCB_item {
     ucontext_t context;
 }TCB_t;
 
+/* Function the initialise the TCB structure of the thread */
 void init_TCB (TCB_t *tcb, void *function, void *stackP, int stack_size)
 
 // arguments to init_TCB are
