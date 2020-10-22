@@ -100,6 +100,7 @@ void writer(void)
 
 int main()
 {
+    ReadyQ = newQueue();
     CreateSem(&mutex, 1);
     CreateSem(&r_sem, 0);
     CreateSem(&w_sem, 0);
@@ -111,6 +112,8 @@ int main()
     start_thread(writer);
     run();
     while (1) sleep(1);
+
+    return 0;
 }   
 
 
