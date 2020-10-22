@@ -1,61 +1,63 @@
 #include "TCB.h"
 
-/* Allocating space for TCB structure of new item to be added to the queue */
-TCB_t* NewItem(){
-
-    TCB_t* new_item = (TCB_t*)malloc(sizeof(TCB_t));
-    return new_item;
+TCB_t* NewItem(void){
+    TCB_t *new = (TCB_t*)malloc(sizeof(TCB_t));
+    return new;
 }
 
-/* Creating a new empty queue */
-TCB_t* newQueue(){
-
-    TCB_t* header;
-    header = NULL;
-    return header;
+TCB_t* newQueue(void){
+    TCB_t *head;
+    head = NULL;
+    return head;
 }
 
-/* Adding element to end of the queue  */
-void AddQueue(TCB_t **head, TCB_t **item)
-{
-    if((*head) == NULL){
+void AddQueue(TCB_t **head, TCB_t **item){
+    TCB_t* temp = *head;
+    if(temp == NULL){
         (*head) = (*item);
-        (*head)->next = (*head);
-        (*head)->prev = (*head);
+        (*head)->next = (*head)->prev;
+        (*head)->prev = (*head)->next;
+        return;
     }
-    else{
-        (*item)->prev = (*head)->prev;
-        (*item)->next = (*head);
-        (*head)->prev->next = (*item);
+    if(temp->next == NULL){
+        (*head)->next = (*item);
         (*head)->prev = (*item);
+        (*item)->next = (*head);
+        (*item)->prev = (*head);
+        return;
     }
+    while((*head) != temp->next){
+        temp = temp->next;
+    }
+    (*item)->next = *head;
+    (*item)->prev = temp;
+    temp->next = *item;
+    (*head)->prev = *item;
 }
 
-/* Deleting the head of the queue and returning the deleted item,
-Making the next item the new head of the queue */
 TCB_t* DelQueue(TCB_t **head){
-
-    if(head == NULL){
-        perror("Queue is empty");
-        exit(EXIT_FAILURE);
+    TCB_t *temp = (*head);
+    TCB_t *end = (*head);
+    TCB_t *next;
+    if((*head) == NULL){
+        return NULL;
     }
-    else if((*head)->next == (*head) && (*head)->prev == (*head)){
-        TCB_t* temp = (*head);
-        temp->next = NULL;
-        temp->prev = NULL;
-        head = NULL;
+    if((*head)->next == NULL){
+        (*head)->next = NULL;
+        (*head)->prev = NULL;
         return temp;
     }
-    else{
-        TCB_t* temp = (*head);
-        temp->prev->next = (*head)->next;
-        temp->next->prev = (*head)->prev;
-        (*head) = (*head)->next;
-        return temp;
+    while((*head) != end->next){
+        end =end->next;
     }
+    (*head) = temp->next;
+    end->next = (*head);
+    (*head)->prev = end;
+    temp->next = NULL;
+    temp->prev = NULL;
+    return temp;
 }
 
-/* Freeing the allocated space of the TCB structure of the item */
 void FreeItem(TCB_t **item){
     (*item) = NULL;
     free(&(*item));
