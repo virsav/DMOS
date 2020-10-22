@@ -1,16 +1,19 @@
 #include "TCB.h"
 
+/* Allocating space for TCB structure of new item to be added to the queue */
 TCB_t* NewItem(void){
     TCB_t *new = (TCB_t*)malloc(sizeof(TCB_t));
     return new;
 }
 
+/* Creating a new empty queue */
 TCB_t* newQueue(void){
     TCB_t *head;
     head = NULL;
     return head;
 }
 
+/* Adding element to end of the queue  */
 void AddQueue(TCB_t **head, TCB_t **item){
     TCB_t* temp = *head;
     if(temp == NULL){
@@ -35,6 +38,8 @@ void AddQueue(TCB_t **head, TCB_t **item){
     (*head)->prev = *item;
 }
 
+/* Deleting the head of the queue and returning the deleted item,
+Making the next item the new head of the queue */
 TCB_t* DelQueue(TCB_t **head){
     TCB_t *temp = (*head);
     TCB_t *end = (*head);
@@ -58,6 +63,7 @@ TCB_t* DelQueue(TCB_t **head){
     return temp;
 }
 
+/* Freeing the allocated space of the TCB structure of the item */
 void FreeItem(TCB_t **item){
     (*item) = NULL;
     free(&(*item));
