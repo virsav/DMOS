@@ -34,6 +34,6 @@ void yield()
     AddQueue(&ReadyQ, &Curr_Thread);
     Prev_Thread = Curr_Thread;
     Curr_Thread = DelQueue(&ReadyQ);
-    printf("Switching from Thread %d to Thread %d\n", Prev_Thread->thread_id, Curr_Thread->thread_id);
+    //printf("Switching from Thread %d to Thread %d\n", Prev_Thread->thread_id, Curr_Thread->thread_id);
     swapcontext(&(Prev_Thread->context), &(Curr_Thread->context));
 }

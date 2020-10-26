@@ -101,9 +101,9 @@ void writer(void)
 int main()
 {
     ReadyQ = newQueue();
-    CreateSem(&mutex, 1);
-    CreateSem(&r_sem, 0);
-    CreateSem(&w_sem, 0);
+    mutex = CreateSem(1);
+    r_sem = CreateSem(0);
+    w_sem = CreateSem(0);
     start_thread(reader);
     start_thread(reader);
     start_thread(reader);

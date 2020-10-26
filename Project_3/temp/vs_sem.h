@@ -1,16 +1,16 @@
 #include "threads.h"
 
-typedef struct semaphore_t {
+typedef struct Semaphore_t {
     TCB_t *queue;
     int count;
 } Semaphore_t;
 
-Semaphore_t* CreateSem(Semaphore_t **new_sem, int i){
+Semaphore_t* CreateSem(int i){
 
-	(*new_sem) = (Semaphore_t*)malloc(sizeof(Semaphore_t));
-	(*new_sem)->count = i;
-	(*new_sem)->queue = newQueue();
-	return (*new_sem);
+    Semaphore_t (*new_sem) = (Semaphore_t*)malloc(sizeof(Semaphore_t));
+	(new_sem)->count = i;
+	(new_sem)->queue = newQueue();
+	return (new_sem);
 }
 
 void P(Semaphore_t **sem){
@@ -29,9 +29,9 @@ void V(Semaphore_t **sem){
 
 	(*sem)->count++;
 	if((*sem)->count <= 0){
-		TCB_t* blocked;
-		blocked = DelQueue(&((*sem)->queue));
-		AddQueue(&ReadyQ, &blocked);
+		TCB_t* unblocked;
+		unblocked = DelQueue(&((*sem)->queue));
+		AddQueue(&ReadyQ, &unblocked);
 	}
 	yield();
 }
