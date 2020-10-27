@@ -3,6 +3,7 @@
 Semaphore_t *r_sem, *w_sem, *mutex;
 int rwc = 0, wwc = 0, rc = 0, wc = 0, global_ID=0;
 
+//Function to handle entry of the reader
 void reader_entry(int ID)
 {
 	printf("[reader: #%d]\ttrying to read\n", ID);
@@ -22,6 +23,7 @@ void reader_entry(int ID)
 	    V(&mutex);		// let other processes use the mutex.
 }
 
+//Function to handle exit of the reader
 void reader_exit(int ID)
 {
 	P(&mutex);
@@ -35,6 +37,7 @@ void reader_exit(int ID)
 
 }
 
+//Function to handle entry of the writer
 void writer_entry(int ID)
 {
 	printf("\t\t\t\t[writer: #%d]\ttrying to write\n", ID);
@@ -53,6 +56,7 @@ void writer_entry(int ID)
 	V(&mutex);		// let go of the mutex
 }
 
+//Function to handle exit of the writer
 void writer_exit(int ID)
 {
 	P(&mutex);
@@ -67,7 +71,7 @@ void writer_exit(int ID)
 }
 
 
-
+//Funtion to execute the reading process
 void reader(void)
 { 
   int ID;
@@ -81,6 +85,7 @@ void reader(void)
   };
 }
 
+//Function to execute the writing process
 void writer(void)
 {
   int ID;
@@ -96,8 +101,7 @@ void writer(void)
 
 
 
-//-------------------------------------------------------
-
+//Main function to initialize readyq, create semaphores and execute the reading and writing process
 int main()
 {
     ReadyQ = newQueue();
