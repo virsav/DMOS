@@ -1,10 +1,12 @@
 #include "threads.h"
 
+//Initialize structure for the semaphore
 typedef struct Semaphore_t {
     TCB_t *queue;
     int count;
 } Semaphore_t;
 
+//Create the semaphore
 Semaphore_t* CreateSem(int i){
 
     Semaphore_t (*new_sem) = (Semaphore_t*)malloc(sizeof(Semaphore_t));
@@ -13,6 +15,7 @@ Semaphore_t* CreateSem(int i){
 	return (new_sem);
 }
 
+//P routine of the semaphore
 void P(Semaphore_t **sem){
 
 	(*sem)->count--;
@@ -25,6 +28,7 @@ void P(Semaphore_t **sem){
 	}
 }
 
+//V routine of the semaphore
 void V(Semaphore_t **sem){
 
 	(*sem)->count++;
