@@ -15,8 +15,8 @@
 #########################################################################################################################
 -----------------------------------------------Assignment Information----------------------------------------------------
 
-Author 1: Raunak         ; ASU ID -1217240245
-Author 2: Viraj Savaliya ; ASU ID -1217678787
+Author 1: Raunak         ; ASU ID -
+Author 2: Viraj Savaliya ; ASU ID -
 
 Project 4 : Message passing via ports for multiple Server-Client model
 Date : 11/11/2020
