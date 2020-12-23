@@ -15,8 +15,8 @@
 #########################################################################################################################
 -----------------------------------------------Assignment Information----------------------------------------------------
 
-Author 1: Raunak         ; ASU ID -1217240245
-Author 2: Viraj Savaliya ; ASU ID -1217678787
+Author 1: Raunak         ; ASU ID -
+Author 2: Viraj Savaliya ; ASU ID -
 
 Project 2 : Queue routines for multiple threads using non-preemptive scheduling
 Date : 10/4/2020
