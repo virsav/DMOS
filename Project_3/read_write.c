@@ -15,8 +15,8 @@
 #########################################################################################################################
 -----------------------------------------------Assignment Information----------------------------------------------------
 
-Author 1: Raunak         ; ASU ID -1217240245
-Author 2: Viraj Savaliya ; ASU ID -1217678787
+Author 1: Raunak         ; ASU ID -
+Author 2: Viraj Savaliya ; ASU ID -
 
 Project 3 : Implementing Semaphores to implement Readers/Writers
 Date : 10/26/2020
